@@ -13,23 +13,23 @@ func NewMockDatastore() Datastore {
 	return &MockDatastore{}
 }
 
-func (m *MockDatastore) Add(name string, machineName string) (int64, string, error) {
-	return 55, "testAccessKey", nil
+func (m *MockDatastore) Add(appGroup string, expiry int) (string, error) {
+	return "testID", nil
 }
 
 func (m *MockDatastore) Delete(accessKey string) error {
 	return nil
 }
 
-func (m *MockDatastore) View(id int64) (Shipper, error) {
+func (m *MockDatastore) View(id string) (Shipper, error) {
 	testTime := time.Date(2018, 1, 31, 1, 1, 1, 1, time.UTC)
 	return Shipper{
-		ID:          55,
-		AccessKey:   "testAccessKey",
-		Name:        "testName",
-		MachineName: "testMachineName",
-		CreatedAt:   testTime,
-		UpdatedAt:   testTime,
+		ID:        "testID",
+		AppGroup:  "testAppGroup",
+		Expiry:    10,
+		Deleted:   false,
+		CreatedAt: testTime,
+		UpdatedAt: testTime,
 	}, nil
 
 }
@@ -38,12 +38,12 @@ func (m *MockDatastore) ViewAll() ([]Shipper, error) {
 	testTime := time.Date(2018, 1, 31, 1, 1, 1, 1, time.UTC)
 	return []Shipper{
 		Shipper{
-			ID:          55,
-			AccessKey:   "testAccessKey",
-			Name:        "testName",
-			MachineName: "testMachineName",
-			CreatedAt:   testTime,
-			UpdatedAt:   testTime,
+			ID:        "testID",
+			AppGroup:  "testAppGroup",
+			Expiry:    10,
+			Deleted:   false,
+			CreatedAt: testTime,
+			UpdatedAt: testTime,
 		},
 	}, nil
 
@@ -57,9 +57,8 @@ func NewTestService() service {
 
 func TestServiceAdd(t *testing.T) {
 	ss := NewTestService()
-	id, accessKey, err := ss.Add("testname", "testMachineName")
-	assert.Equal(t, int64(55), id)
-	assert.Equal(t, "testAccessKey", accessKey)
+	id, err := ss.Add("testAppGroup", 10)
+	assert.Equal(t, "testID", id)
 	assert.Nil(t, err)
 }
 
@@ -71,20 +70,20 @@ func TestServiceDelete(t *testing.T) {
 
 func TestServiceView(t *testing.T) {
 	ss := NewTestService()
-	shipper, err := ss.View(55)
+	shipper, err := ss.View("testID")
 	assert.Nil(t, err)
-	assert.Equal(t, int64(55), shipper.ID)
-	assert.Equal(t, "testAccessKey", shipper.AccessKey)
-	assert.Equal(t, "testName", shipper.Name)
-	assert.Equal(t, "testMachineName", shipper.MachineName)
+	assert.Equal(t, "testID", shipper.ID)
+	assert.Equal(t, "testAppGroup", shipper.AppGroup)
+	assert.Equal(t, 10, shipper.Expiry)
+	assert.Equal(t, false, shipper.Deleted)
 }
 
 func TestServiceViewAll(t *testing.T) {
 	ss := NewTestService()
 	shippers, err := ss.ViewAll()
 	assert.Nil(t, err)
-	assert.Equal(t, int64(55), shippers[0].ID)
-	assert.Equal(t, "testAccessKey", shippers[0].AccessKey)
-	assert.Equal(t, "testName", shippers[0].Name)
-	assert.Equal(t, "testMachineName", shippers[0].MachineName)
+	assert.Equal(t, "testID", shippers[0].ID)
+	assert.Equal(t, "testAppGroup", shippers[0].AppGroup)
+	assert.Equal(t, 10, shippers[0].Expiry)
+	assert.Equal(t, false, shippers[0].Deleted)
 }

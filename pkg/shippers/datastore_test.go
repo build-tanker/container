@@ -41,12 +41,11 @@ func TestDatastoreAdd(t *testing.T) {
 	datastore := NewDatastore(ctx, db)
 
 	mockQuery := "^INSERT INTO shippers (.+) RETURNING id$"
-	mockRows := sqlmock.NewRows([]string{"id", "access_key", "name", "machine_name", "created_at", "updated_at"}).AddRow(10, "8b0047c1-9e6a-46fb-9664-75ac60c3596a", "test", "machine.test", time.Now(), time.Now())
+	mockRows := sqlmock.NewRows([]string{"id", "app_group", "expiry", "deleted", "created_at", "updated_at"}).AddRow("8b0047c1-9e6a-46fb-9664-75ac60c3596a", "1234678-abcde-12345", "10", "false", time.Now(), time.Now())
 	mock.ExpectQuery(mockQuery).WillReturnRows(mockRows)
 
-	id, _, err := datastore.Add("test", "machine.test")
+	_, err := datastore.Add("1234678-abcde-12345", 10)
 	assert.Nil(t, err)
-	assert.Equal(t, int64(10), id)
 }
 
 func TestDatastoreDelete(t *testing.T) {
@@ -72,13 +71,13 @@ func TestDatastoreView(t *testing.T) {
 	datastore := NewDatastore(ctx, db)
 
 	mockQuery := "^SELECT \\* FROM shippers WHERE (.+)$"
-	mockRows := sqlmock.NewRows([]string{"id", "access_key", "name", "machine_name", "created_at", "updated_at"}).AddRow(10, "8b0047c1-9e6a-46fb-9664-75ac60c3596a", "test1", "machine.test1", time.Now(), time.Now())
+	mockRows := sqlmock.NewRows([]string{"id", "app_group", "expiry", "deleted", "created_at", "updated_at"}).AddRow("8b0047c1-9e6a-46fb-9664-75ac60c3596a", "12345-abcde-12345", "10", "false", time.Now(), time.Now())
 	mock.ExpectQuery(mockQuery).WillReturnRows(mockRows)
 
-	shipper, err := datastore.View(10)
+	shipper, err := datastore.View("8b0047c1-9e6a-46fb-9664-75ac60c3596a")
 	assert.Nil(t, err)
-	assert.Equal(t, "test1", shipper.Name)
-	assert.Equal(t, "8b0047c1-9e6a-46fb-9664-75ac60c3596a", shipper.AccessKey)
+	assert.Equal(t, "12345-abcde-12345", shipper.AppGroup)
+	assert.Equal(t, 10, shipper.Expiry)
 }
 
 func TestDatastoreViewAll(t *testing.T) {
@@ -89,11 +88,11 @@ func TestDatastoreViewAll(t *testing.T) {
 	datastore := NewDatastore(ctx, db)
 
 	mockQuery := "^SELECT \\* FROM shippers LIMIT 100 OFFSET 0$"
-	mockRows := sqlmock.NewRows([]string{"id", "access_key", "name", "machine_name", "created_at", "updated_at"}).AddRow(10, "8b0047c1-9e6a-46fb-9664-75ac60c3596a", "test1", "machine.test1", time.Now(), time.Now()).AddRow(11, "8b0047c1-9e6a-46fb-9664-75ac60c3596b", "test2", "machine.test2", time.Now(), time.Now()).AddRow(12, "8b0047c1-9e6a-46fb-9664-75ac60c3596c", "test3", "machine.test3", time.Now(), time.Now())
+	mockRows := sqlmock.NewRows([]string{"id", "app_group", "expiry", "deleted", "created_at", "updated_at"}).AddRow("8b0047c1-9e6a-46fb-9664-75ac60c3596a", "12345-abcde-12345", "10", "false", time.Now(), time.Now()).AddRow("8b0047c1-9e6a-46fb-9664-75ac60c3596b", "12345-abcde-12345", "10", "false", time.Now(), time.Now()).AddRow("8b0047c1-9e6a-46fb-9664-75ac60c3596c", "12345-abcde-12345", "10", "false", time.Now(), time.Now())
 	mock.ExpectQuery(mockQuery).WillReturnRows(mockRows)
 
 	shippers, err := datastore.ViewAll()
 	assert.Nil(t, err)
-	assert.Equal(t, "test1", shippers[0].Name)
-	assert.Equal(t, "8b0047c1-9e6a-46fb-9664-75ac60c3596b", shippers[1].AccessKey)
+	assert.Equal(t, "8b0047c1-9e6a-46fb-9664-75ac60c3596a", shippers[0].ID)
+	assert.Equal(t, "12345-abcde-12345", shippers[0].AppGroup)
 }

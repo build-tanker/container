@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gojekfarm/tanker-builds/pkg/responses"
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/gojekfarm/tanker-builds/pkg/appcontext"
-	"github.com/jmoiron/sqlx"
+	"github.com/gojekfarm/tanker-builds/pkg/responses"
 )
 
 type HTTPHandler func(w http.ResponseWriter, r *http.Request)
@@ -35,10 +35,15 @@ func NewHandler(ctx *appcontext.AppContext, db *sqlx.DB) Handler {
 
 func (s *handler) Add() HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
-		name := s.parseKeyFromQuery(r, "name")
-		machineName := s.parseKeyFromQuery(r, "machineName")
+		appGroup := s.parseKeyFromQuery(r, "appGroup")
+		expiry := s.parseKeyFromQuery(r, "expiry")
 
-		id, accessKey, err := s.service.Add(name, machineName)
+		expiryInt, err := strconv.Atoi(expiry)
+		if err != nil {
+			expiryInt = 0
+		}
+
+		id, err := s.service.Add(appGroup, expiryInt)
 		if err != nil {
 			responses.WriteJSON(w, http.StatusBadRequest, responses.NewErrorResponse("shipper:add:error", err.Error()))
 			return
@@ -46,8 +51,7 @@ func (s *handler) Add() HTTPHandler {
 
 		responses.WriteJSON(w, http.StatusOK, &responses.Response{
 			Data: &Shipper{
-				ID:        id,
-				AccessKey: accessKey,
+				ID: id,
 			},
 			Success: "true",
 		})
@@ -70,9 +74,6 @@ func (s *handler) parseKeyFromVars(r *http.Request, key string) string {
 // /v1/shippers?page=1&count=25
 func (s *handler) ViewAll() HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// page := s.parseKeyFromQuery(r, "page")
-		// count := s.parseKeyFromQuery(r, "count")
-
 		shippers, err := s.service.ViewAll()
 		if err != nil {
 			responses.WriteJSON(w, http.StatusBadRequest, responses.NewErrorResponse("shipper:viewall:error", err.Error()))
@@ -88,14 +89,9 @@ func (s *handler) ViewAll() HTTPHandler {
 // /v1/shippers/id
 func (s *handler) View() HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
-		idString := s.parseKeyFromVars(r, "id")
-		id, err := strconv.Atoi(idString)
-		if err != nil {
-			responses.WriteJSON(w, http.StatusBadRequest, responses.NewErrorResponse("shipper:view:notFound", errors.New("Could not find id in the request").Error()))
-			return
-		}
+		id := s.parseKeyFromVars(r, "id")
 
-		shippers, err := s.service.View(int64(id))
+		shippers, err := s.service.View(id)
 		if err != nil {
 			responses.WriteJSON(w, http.StatusBadRequest, responses.NewErrorResponse("shipper:view:error", err.Error()))
 			return
@@ -110,13 +106,13 @@ func (s *handler) View() HTTPHandler {
 // /v1/shippers/id
 func (s *handler) Delete() HTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
-		accessKey := s.parseKeyFromVars(r, "accessKey")
-		if accessKey == "" {
+		id := s.parseKeyFromVars(r, "id")
+		if id == "" {
 			responses.WriteJSON(w, http.StatusBadRequest, responses.NewErrorResponse("shipper:delete:notFound", errors.New("Could not find id in the request").Error()))
 			return
 		}
 
-		err := s.service.Delete(accessKey)
+		err := s.service.Delete(id)
 		if err != nil {
 			responses.WriteJSON(w, http.StatusBadRequest, responses.NewErrorResponse("shipper:delete:error", err.Error()))
 			return
