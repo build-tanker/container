@@ -10,9 +10,11 @@ CREATE TABLE shipper (
 CREATE TABLE build (
   id UUID NOT NULL PRIMARY KEY,
   file_name VARCHAR(256),
-  shipper_access_key UUID REFERENCES shipper(id),
+  shipper UUID REFERENCES shipper(id),
   bundle_id VARCHAR(128),
-  upload_complete BOOLEAN,
+  platform VARCHAR(128),
+  extension VARCHAR(128),
+  upload_complete BOOLEAN DEFAULT false,
   deleted BOOLEAN DEFAULT false,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
