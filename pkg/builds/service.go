@@ -6,8 +6,9 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// Service - handles business logic for builds
 type Service interface {
-	Add(accessKey string, bundle string) (string, error)
+	Add(fileName, shipper, bundle, platform, extension string) (string, error)
 }
 
 type service struct {
@@ -16,6 +17,7 @@ type service struct {
 	datastore Datastore
 }
 
+// NewService - create a new service for builds
 func NewService(ctx *appcontext.AppContext, db *sqlx.DB) Service {
 	datastore := NewDatastore(ctx, db)
 	s := &service{
@@ -45,7 +47,7 @@ func (s *service) init() {
 	}
 }
 
-func (s *service) Add(accessKey string, bundle string) (string, error) {
+func (s *service) Add(fileName, shipper, bundle, platform, extension string) (string, error) {
 	// Does two things
 	// Get a url from the google cloud package and return it
 	url, err := s.fs.GetWriteURL()
@@ -53,7 +55,7 @@ func (s *service) Add(accessKey string, bundle string) (string, error) {
 		return "", err
 	}
 	// Create an entry in the database
-	_, err = s.datastore.Add(accessKey, bundle)
+	_, err = s.datastore.Add(fileName, shipper, bundle, platform, extension)
 	if err != nil {
 		return "", err
 	}

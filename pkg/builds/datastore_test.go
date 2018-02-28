@@ -32,10 +32,10 @@ func TestDatastoreAdd(t *testing.T) {
 	datastore := NewDatastore(ctx, db)
 
 	mockQuery := "^INSERT INTO builds (.+) RETURNING id$"
-	mockRows := sqlmock.NewRows([]string{"id", "shipper", "bundle_id", "upload_complete", "migrated", "created_at", "updated_at"}).AddRow(10, "testShipper77", "com.me.app", false, false, time.Now(), time.Now())
+	mockRows := sqlmock.NewRows([]string{"id", "file_name", "shipper", "bundle_id", "platform", "extension", "upload_complete", "deleted", "created_at", "updated_at"}).AddRow("testId", "testFileName", "testShippper", "com.me.app", "ios", "ipa", false, false, time.Now(), time.Now())
 	mock.ExpectQuery(mockQuery).WillReturnRows(mockRows)
 
-	id, err := datastore.Add("testShipper77", "com.me.app")
+	id, err := datastore.Add("testFileName", "testShipper", "com.me.app", "ios", "ipa")
 	assert.Nil(t, err)
-	assert.Equal(t, int64(10), id)
+	assert.Equal(t, "testId", id)
 }

@@ -16,12 +16,12 @@ func NewMockService() Service {
 	return MockService{}
 }
 
-func (m MockService) Add(accessKey string, bundle string) (string, error) {
+func (m MockService) Add(fileName, shipper, bundle, platform, extension string) (string, error) {
 	return "https://storage.googleapis.com/testBucket/206329dc-a2af-42a4-9977-13990d0c25dc?Expires=1518408172&GoogleAccessId=tanker-gcs-upload-test%40tanker-194004&Signature=OuaiGWj%2BHxJp0LOlu67SwLz1pbwLHrlNlSugrqgLD%2Fv6", nil
 
 }
 
-func NewTestHandler() *handler {
+func newTestHandler() *handler {
 	s := NewMockService()
 	ctx := NewTestContext()
 	return &handler{
@@ -31,9 +31,9 @@ func NewTestHandler() *handler {
 }
 
 func TestHandlerAdd(t *testing.T) {
-	h := NewTestHandler()
+	h := newTestHandler()
 
-	req, err := http.NewRequest(http.MethodPost, "/v1/builds?accessKey=a1b2c3&bundle=com.me.app", nil)
+	req, err := http.NewRequest(http.MethodPost, "/v1/builds?fileName=testFile.ipa&shipper=a1b2c3&bundle=com.me.app&platform=ios&extension=ipa", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -8,18 +8,23 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// Build - data structure for builds
 type Build struct {
-	ID             int64     `db:"id" json:"id"`
+	ID             string    `db:"id" json:"id"`
+	FileName       string    `db:"file_name" json:"file_name"`
 	Shipper        string    `db:"shipper" json:"shipper"`
 	BundleID       string    `db:"bundle_id" json:"bundle_id"`
+	Platform       string    `db:"platform" json:"platform"`
+	Extension      string    `db:"extension" json:"extension"`
 	UploadComplete bool      `db:"upload_complete" json:"upload_complete"`
-	Migrated       bool      `db:"migrated" json:"migrated"`
+	Deleted        bool      `db:"deleted" json:"deleted"`
 	CreatedAt      time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt      time.Time `db:"updated_at" json:"updated_at"`
 }
 
+// Datastore - datastore for builds
 type Datastore interface {
-	Add(shipper string, bundleID string) (int64, error)
+	Add(fileName, shipper, bundleID, platform, extension string) (string, error)
 }
 
 type datastore struct {
@@ -27,6 +32,7 @@ type datastore struct {
 	db  *sqlx.DB
 }
 
+// NewDatastore - create a new datastore for builds
 func NewDatastore(ctx *appcontext.AppContext, db *sqlx.DB) Datastore {
 	return &datastore{
 		ctx: ctx,
@@ -34,20 +40,20 @@ func NewDatastore(ctx *appcontext.AppContext, db *sqlx.DB) Datastore {
 	}
 }
 
-func (d *datastore) Add(shipper string, bundleID string) (int64, error) {
-	rows, err := d.db.Queryx("INSERT INTO builds (shipper, bundle_id, upload_complete, migrated) VALUES($1, $2, $3, $4) RETURNING id", shipper, bundleID, false, false)
+func (d *datastore) Add(fileName, shipper, bundleID, platform, extension string) (string, error) {
+	rows, err := d.db.Queryx("INSERT INTO builds (file_name, shipper, bundle_id, platform, extension) VALUES($1, $2, $3, $4, $5) RETURNING id", fileName, shipper, bundleID, platform, extension)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	for rows.Next() {
 		var b Build
 		err = rows.StructScan(&b)
 		if err != nil {
-			return 0, err
+			return "", err
 		}
 		return b.ID, err
 	}
 
-	return 0, errors.New("No error in inserting, still could not find a ID")
+	return "", errors.New("No error in inserting, still could not find a ID")
 }
