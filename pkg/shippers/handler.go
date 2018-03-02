@@ -12,8 +12,10 @@ import (
 	"github.com/build-tanker/container/pkg/responses"
 )
 
+// HTTPHandler - handler incoming requests
 type HTTPHandler func(w http.ResponseWriter, r *http.Request)
 
+// Handler - handle requests for shippers
 type Handler interface {
 	Add() HTTPHandler
 	ViewAll() HTTPHandler
@@ -26,6 +28,7 @@ type handler struct {
 	service Service
 }
 
+// NewHandler - create a new handler for shippers
 func NewHandler(ctx *appcontext.AppContext, db *sqlx.DB) Handler {
 	return &handler{
 		ctx:     ctx,

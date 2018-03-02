@@ -49,27 +49,27 @@ func (m *MockDatastore) ViewAll() ([]Shipper, error) {
 
 }
 
-func NewTestService() service {
+func newTestService() service {
 	ctx := NewTestContext()
 	ds := NewMockDatastore()
 	return service{ctx: ctx, datastore: ds}
 }
 
 func TestServiceAdd(t *testing.T) {
-	ss := NewTestService()
+	ss := newTestService()
 	id, err := ss.Add("testAppGroup", 10)
 	assert.Equal(t, "testID", id)
 	assert.Nil(t, err)
 }
 
 func TestServiceDelete(t *testing.T) {
-	ss := NewTestService()
+	ss := newTestService()
 	err := ss.Delete("5")
 	assert.Nil(t, err)
 }
 
 func TestServiceView(t *testing.T) {
-	ss := NewTestService()
+	ss := newTestService()
 	shipper, err := ss.View("testID")
 	assert.Nil(t, err)
 	assert.Equal(t, "testID", shipper.ID)
@@ -79,7 +79,7 @@ func TestServiceView(t *testing.T) {
 }
 
 func TestServiceViewAll(t *testing.T) {
-	ss := NewTestService()
+	ss := newTestService()
 	shippers, err := ss.ViewAll()
 	assert.Nil(t, err)
 	assert.Equal(t, "testID", shippers[0].ID)

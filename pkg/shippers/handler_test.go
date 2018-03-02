@@ -57,7 +57,7 @@ func (m *MockService) ViewAll() ([]Shipper, error) {
 	}, nil
 }
 
-func NewTestHandler() *handler {
+func newTestHandler() *handler {
 	ctx := NewTestContext()
 	return &handler{
 		service: NewMockService(ctx),
@@ -65,7 +65,7 @@ func NewTestHandler() *handler {
 }
 
 func TestHandlerAdd(t *testing.T) {
-	h := NewTestHandler()
+	h := newTestHandler()
 
 	req, err := http.NewRequest(http.MethodPost, "/v1/shippers", nil)
 	if err != nil {
@@ -82,7 +82,7 @@ func TestHandlerAdd(t *testing.T) {
 }
 
 func TestHandlerView(t *testing.T) {
-	h := NewTestHandler()
+	h := newTestHandler()
 
 	req, err := http.NewRequest(http.MethodGet, "/v1/shippers/15", nil)
 	if err != nil {
@@ -99,7 +99,7 @@ func TestHandlerView(t *testing.T) {
 }
 
 func TestHandlerViewAll(t *testing.T) {
-	h := NewTestHandler()
+	h := newTestHandler()
 
 	req, err := http.NewRequest(http.MethodGet, "/v1/shippers", nil)
 	if err != nil {
@@ -116,7 +116,7 @@ func TestHandlerViewAll(t *testing.T) {
 }
 
 func TestHandlerDelete(t *testing.T) {
-	h := NewTestHandler()
+	h := newTestHandler()
 
 	req, err := http.NewRequest(http.MethodDelete, "/v1/shippers/15", nil)
 	if err != nil {
