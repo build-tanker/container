@@ -8,17 +8,18 @@ import (
 	"time"
 
 	"github.com/build-tanker/container/pkg/appcontext"
-	"github.com/build-tanker/container/pkg/filesystem"
+	"github.com/build-tanker/disk"
 	uuid "github.com/satori/go.uuid"
 )
 
+// GoogleCloudStorageFileStore - the filestore interface for GCS
 type GoogleCloudStorageFileStore interface {
 }
 
 type googleCloudStorageFileStore struct {
 	ctx   *appcontext.AppContext
 	creds *googleCredentials
-	fs    filesystem.FileSystem
+	dd    disk.Disk
 	gcs   GoogleCloudStorage
 }
 
@@ -35,13 +36,14 @@ type googleCredentials struct {
 	ClientX509CertURL       string `json:"client_x509_cert_url"`
 }
 
+// NewGoogleCloudStorageFileStore - initialise a new GCS filestore
 func NewGoogleCloudStorageFileStore(ctx *appcontext.AppContext) FileStore {
-	fs := filesystem.NewFileSystem()
+	dd := disk.NewDisk()
 	gcs := NewGoogleCloudStorage()
 	return &googleCloudStorageFileStore{
 		ctx:   ctx,
 		creds: &googleCredentials{},
-		fs:    fs,
+		dd:    dd,
 		gcs:   gcs,
 	}
 }
@@ -75,7 +77,7 @@ func (g *googleCloudStorageFileStore) Setup() error {
 		return errors.New(errMessage)
 	}
 
-	data, err := g.fs.ReadCompleteFileFromDisk(file)
+	data, err := g.dd.ReadCompleteFile(file)
 	if err != nil {
 		log.Fatalln(err.Error())
 		return err
