@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gojekfarm/tanker-builds/pkg/filesystem"
+	"github.com/build-tanker/container/pkg/filesystem"
 	"github.com/stretchr/testify/assert"
 )
 

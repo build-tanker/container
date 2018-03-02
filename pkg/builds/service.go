@@ -1,8 +1,8 @@
 package builds
 
 import (
-	"github.com/gojekfarm/tanker-builds/pkg/appcontext"
-	"github.com/gojekfarm/tanker-builds/pkg/filestore"
+	"github.com/build-tanker/container/pkg/appcontext"
+	"github.com/build-tanker/container/pkg/filestore"
 	"github.com/jmoiron/sqlx"
 )
 

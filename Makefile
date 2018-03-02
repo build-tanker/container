@@ -20,7 +20,7 @@ end:
 #
 
 ### Name of the executable, it's possible to have multiple executables
-APP_EXECUTABLE="tanker-builds"
+APP_EXECUTABLE="container"
 
 ### Get a list of all golang packages
 ALL_PACKAGES=$(go list ./... | grep -v "vendor")
@@ -32,7 +32,7 @@ ALL_PACKAGES=$(go list ./... | grep -v "vendor")
 ### Clean temporary files
 clean:
 	@echo "$(GREEN_COLOR)Cleaning unwanted files $(END_COLOR)"
-	rm -rf tanker.builds.toml
+	rm -rf container.toml
 	rm -rf coverage.txt
 	rm -rf coverage.html
 	rm -rf bin/
@@ -66,7 +66,7 @@ lint:
 ### Copy config from template
 copy-config:
 	@echo "$(GREEN_COLOR)Copying config from sample $(END_COLOR)"
-	cp tanker.builds.toml.sample tanker.builds.toml
+	cp container.toml.sample container.toml
 
 ### Manually test all packages
 test:
@@ -105,7 +105,7 @@ build_fresh: clean init update fmt vet lint copy-config coverage compile install
 
 build_docker:
 	@echo "$(GREEN_COLOR)Building a docker image $(END_COLOR)"
-	docker build -t gojekfarm/tanker-builds .
+	docker build -t build-tanker/container .
 
 #
 # Recipes for starting new projects

@@ -12,8 +12,8 @@ services:
       - "5432:5432"
     # These define the db name, user and password
     environment:
-      - POSTGRES_USER=tankerBuilds
-      - POSTGRES_PASSWORD=tankerBuilds
+      - POSTGRES_USER=container
+      - POSTGRES_PASSWORD=container
       - PGDATA=/pgdata
   # Setup Redis
   redis:

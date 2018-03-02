@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/gojekfarm/tanker-builds/pkg/config"
+	"github.com/build-tanker/container/pkg/config"
 )
 
 func TestLogger(t *testing.T) {

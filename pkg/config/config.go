@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config - structure to hold the configuration for tanker-builds
+// Config - structure to hold the configuration for container
 type Config struct {
 	fileStore             string
 	port                  string
@@ -27,7 +27,7 @@ func NewConfig(paths []string) *Config {
 		viper.AddConfigPath(path)
 	}
 
-	viper.SetConfigName("tanker.builds")
+	viper.SetConfigName("container")
 	viper.SetConfigType("toml")
 
 	viper.SetDefault("application.fileStore", "googlecloud")

@@ -21,7 +21,7 @@ coverage.tmp
 
 # Project Vendor folder
 vendor/
-tanker.builds.toml
+container.toml
 
 # External Data
 external/pgdata

@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/gojekfarm/tanker-builds/pkg/filestore"
+	"github.com/build-tanker/container/pkg/filestore"
 )
 
 var state string

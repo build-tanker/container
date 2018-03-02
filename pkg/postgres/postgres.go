@@ -3,7 +3,7 @@ package postgres
 import (
 	"time"
 
-	"github.com/gojekfarm/tanker-builds/pkg/logger"
+	"github.com/build-tanker/container/pkg/logger"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // postgres driver
 )

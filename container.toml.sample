@@ -6,9 +6,9 @@ port = "3000"
 enableDelayMiddleware = false
 
 [database]
-name = "tankerBuilds"
-user = "tankerBuilds"
-password = "tankerBuilds"
+name = "container"
+user = "container"
+password = "container"
 host = "localhost"
 port = 5432
 maxPoolSize = 10
